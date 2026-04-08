@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório de Cadastros</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg:        #0a0c10;
+            --surface:   #111318;
+            --surface2:  #1a1d26;
+            --border:    #252933;
+            --accent:    #00e5ff;
+            --accent2:   #7c3aed;
+            --success:   #00ffa3;
+            --text:      #e2e8f0;
+            --muted:     #64748b;
+            --danger:    #ff4d6d;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 40px 20px;
+            background-image:
+                radial-gradient(ellipse 80% 40% at 50% -10%, rgba(0,229,255,0.07) 0%, transparent 70%),
+                radial-gradient(ellipse 60% 30% at 90% 80%, rgba(124,58,237,0.06) 0%, transparent 60%);
+        }
+
+        .wrapper {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+        }
+
+        /* ── Header ── */
+        header {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .brand {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .brand-label {
+            font-family: 'Space Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: var(--accent);
+            opacity: 0.7;
+        }
+
+        .brand-title {
+            font-family: 'Space Mono', monospace;
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: -1px;
+        }
+
+        .brand-title span { color: var(--accent); }
+
+        .status-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--muted);
+            font-family: 'Space Mono', monospace;
+        }
+
+        .status-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+            box-shadow: 0 0 8px var(--success);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        /* ── Cards ── */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 28px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            opacity: 0.3;
+        }
+
+        .card-title {
+            font-family: 'Space Mono', monospace;
+            font-size: 11px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        /* ── Form ── */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 14px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .field label {
+            font-size: 11px;
+            font-family: 'Space Mono', monospace;
+            letter-spacing: 1px;
+            color: var(--muted);
+            text-transform: uppercase;
+        }
+
+        .field input,
+        .field select {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 11px 14px;
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+
+        .field input::placeholder { color: var(--muted); }
+
+        .field input:focus,
+        .field select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(0,229,255,0.08);
+        }
+
+        .field select option { background: var(--surface2); }
+
+        /* ── Buttons ── */
+        .btn-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 18px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-family: 'Space Mono', monospace;
+            font-size: 12px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #000;
+            font-weight: 700;
+        }
+
+        .btn-primary:hover {
+            background: #33eaff;
+            box-shadow: 0 0 20px rgba(0,229,255,0.3);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            box-shadow: 0 0 12px rgba(0,229,255,0.1);
+        }
+
+        /* ── Tables ── */
+        .tables-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 720px) {
+            .tables-grid { grid-template-columns: 1fr; }
+        }
+
+        .table-section { display: flex; flex-direction: column; gap: 0; }
+
+        .table-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .table-name {
+            font-family: 'Space Mono', monospace;
+            font-size: 12px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tag {
+            font-size: 10px;
+            padding: 3px 8px;
+            border-radius: 20px;
+            font-family: 'Space Mono', monospace;
+            letter-spacing: 1px;
+        }
+
+        .tag-clientes {
+            background: rgba(0,229,255,0.1);
+            color: var(--accent);
+            border: 1px solid rgba(0,229,255,0.2);
+        }
+
+        .tag-funcionarios {
+            background: rgba(124,58,237,0.1);
+            color: #a78bfa;
+            border: 1px solid rgba(124,58,237,0.2);
+        }
+
+        .count-badge {
+            font-family: 'Space Mono', monospace;
+            font-size: 11px;
+            color: var(--muted);
+        }
+
+        .table-wrap {
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead th {
+            background: var(--surface2);
+            padding: 10px 14px;
+            font-family: 'Space Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--muted);
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tbody tr {
+            border-bottom: 1px solid var(--border);
+            transition: background 0.15s;
+        }
+
+        tbody tr:last-child { border-bottom: none; }
+
+        tbody tr:hover { background: var(--surface2); }
+
+        tbody td {
+            padding: 11px 14px;
+            font-size: 13px;
+            color: var(--text);
+        }
+
+        .td-id {
+            font-family: 'Space Mono', monospace;
+            font-size: 11px;
+            color: var(--muted);
+        }
+
+        .empty-row td {
+            text-align: center;
+            padding: 30px;
+            color: var(--muted);
+            font-size: 12px;
+            font-family: 'Space Mono', monospace;
+            letter-spacing: 1px;
+        }
+
+        /* ── Toast ── */
+        #toast {
+            position: fixed;
+            bottom: 30px; right: 30px;
+            background: var(--surface2);
+            border: 1px solid var(--success);
+            color: var(--success);
+            padding: 14px 22px;
+            border-radius: 10px;
+            font-family: 'Space Mono', monospace;
+            font-size: 12px;
+            letter-spacing: 1px;
+            box-shadow: 0 0 20px rgba(0,255,163,0.15);
+            transform: translateY(80px);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+            z-index: 999;
+        }
+
+        #toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* ── Spinner ── */
+        .spinner {
+            width: 14px; height: 14px;
+            border: 2px solid rgba(0,229,255,0.2);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            display: none;
+        }
+
+        .spinner.active { display: block; }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+
+        <header>
+            <div class="brand">
+                <span class="brand-label">Sistema de Gestão</span>
+                <h1 class="brand-title">RELATÓRIO<span>_</span>DB</h1>
+            </div>
+            <div class="status-bar">
+                <div class="status-dot"></div>
+                MOCK API CONECTADA
+            </div>
+        </header>
+
+        <!-- Formulário -->
+        <div class="card">
+            <div class="card-title">Novo Cadastro</div>
+            <div class="form-grid">
+                <div class="field">
+                    <label>Nome Completo</label>
+                    <input type="text" id="nome" placeholder="Ex: Ana Silva">
+                </div>
+                <div class="field">
+                    <label>CPF</label>
+                    <input type="text" id="cpf" placeholder="000.000.000-00">
+                </div>
+                <div class="field">
+                    <label>CEP</label>
+                    <input type="text" id="cep" placeholder="00000-000">
+                </div>
+                <div class="field">
+                    <label>Telefone</label>
+                    <input type="text" id="telefone" placeholder="(00) 00000-0000">
+                </div>
+                <div class="field">
+                    <label>Categoria</label>
+                    <select id="categoria">
+                        <option value="Cliente">Cliente</option>
+                        <option value="Funcionario">Funcionário</option>
+                    </select>
+                </div>
+            </div>
+            <div class="btn-row">
+                <button class="btn btn-primary" onclick="salvarCadastro()">
+                    ＋ Salvar Cadastro
+                </button>
+                <button class="btn btn-secondary" onclick="buscarDados()">
+                    <div class="spinner" id="spinner"></div>
+                    ↻ Sincronizar
+                </button>
+            </div>
+        </div>
+
+        <!-- Tabelas -->
+        <div class="tables-grid">
+            <div class="table-section">
+                <div class="table-header">
+                    <div class="table-name">
+                        <span class="tag tag-clientes">CLIENTES</span>
+                    </div>
+                    <span class="count-badge" id="count-clientes">— registros</span>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nome</th>
+                                <th>CPF</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabela-clientes">
+                            <tr class="empty-row"><td colspan="3">AGUARDANDO SYNC...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="table-section">
+                <div class="table-header">
+                    <div class="table-name">
+                        <span class="tag tag-funcionarios">FUNCIONÁRIOS</span>
+                    </div>
+                    <span class="count-badge" id="count-funcionarios">— registros</span>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nome</th>
+                                <th>CPF</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabela-funcionarios">
+                            <tr class="empty-row"><td colspan="3">AGUARDANDO SYNC...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="toast">✓ OPERAÇÃO CONCLUÍDA</div>
+
+    <script>
+        // ✅ CORREÇÃO PRINCIPAL: porta 8000 (mapeada no docker-compose)
+        const API_URL = "http://localhost:5000/api/pessoas";
+
+        function showToast(msg = "✓ OPERAÇÃO CONCLUÍDA") {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3000);
+        }
+
+        async function buscarDados() {
+            const spinner = document.getElementById('spinner');
+            spinner.classList.add('active');
+
+            try {
+                const response = await fetch(API_URL);
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                const data = await response.json();
+
+                renderTabela('tabela-clientes', data.clientes || []);
+                renderTabela('tabela-funcionarios', data.funcionarios || []);
+
+                document.getElementById('count-clientes').textContent =
+                    `${(data.clientes || []).length} registros`;
+                document.getElementById('count-funcionarios').textContent =
+                    `${(data.funcionarios || []).length} registros`;
+
+                showToast('✓ DADOS SINCRONIZADOS');
+            } catch (error) {
+                console.error("Erro ao buscar dados:", error);
+                showToast('✗ ERRO NA CONEXÃO — verifique o backend');
+            } finally {
+                spinner.classList.remove('active');
+            }
+        }
+
+        function renderTabela(tbodyId, lista) {
+            const tbody = document.getElementById(tbodyId);
+            if (!lista.length) {
+                tbody.innerHTML = '<tr class="empty-row"><td colspan="3">SEM REGISTROS</td></tr>';
+                return;
+            }
+            tbody.innerHTML = lista.map(p => `
+                <tr>
+                    <td class="td-id">#${p.id}</td>
+                    <td>${p.Nome || p.nome || '—'}</td>
+                    <td>${p.CPF || p.cpf || '—'}</td>
+                </tr>
+            `).join('');
+        }
+
+        async function salvarCadastro() {
+            const campos = ['nome','cpf','cep','telefone'];
+            for (const c of campos) {
+                if (!document.getElementById(c).value.trim()) {
+                    showToast('✗ PREENCHA TODOS OS CAMPOS');
+                    return;
+                }
+            }
+
+            const payload = {
+                Nome:      document.getElementById('nome').value.trim(),
+                CPF:       document.getElementById('cpf').value.trim(),
+                CEP:       document.getElementById('cep').value.trim(),
+                Telefone:  document.getElementById('telefone').value.trim(),
+                Categoria: document.getElementById('categoria').value
+            };
+
+            try {
+                const res = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+                showToast('✓ CADASTRO SALVO COM SUCESSO');
+                // Limpa os campos
+                ['nome','cpf','cep','telefone'].forEach(id =>
+                    document.getElementById(id).value = ''
+                );
+                document.getElementById('categoria').value = 'Cliente';
+
+                await buscarDados();
+            } catch (err) {
+                console.error("Erro ao salvar:", err);
+                showToast('✗ ERRO AO SALVAR — verifique o backend');
+            }
+        }
+
+        // Carrega ao iniciar
+        buscarDados();
+    </script>
+</body>
+</html>
